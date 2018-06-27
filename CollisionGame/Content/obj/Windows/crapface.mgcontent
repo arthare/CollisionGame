@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>C:/Users/ErikaB/source/repos/CollisionGame/CollisionGame/Content/crapface.png</SourceFile>
-  <SourceTime>2018-06-02T09:07:39.2850173-04:00</SourceTime>
-  <DestFile>C:/Users/ErikaB/source/repos/CollisionGame/CollisionGame/Content/bin/Windows/crapface.xnb</DestFile>
-  <DestTime>2018-06-02T09:37:42.2975772-04:00</DestTime>
+  <SourceFile>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/crapface.png</SourceFile>
+  <SourceTime>2018-06-19T19:36:50.5168312-04:00</SourceTime>
+  <DestFile>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/bin/Windows/crapface.xnb</DestFile>
+  <DestTime>2018-06-19T19:59:43.0330981-04:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2017-03-01T10:05:36-05:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

@@ -10,6 +10,10 @@ namespace CollisionGame
         CrapFace = 1,
         Player = 2,
         Fireball = 3,
+        PlayerUp =4,
+        PlayerDown,
+        PlayerRight,
+        PlayerLeft,
     }
 
 
@@ -48,6 +52,13 @@ namespace CollisionGame
     // playerobject class inherited from gameobject
     class PlayerObject : GameObject
     {
+
+
+        // task 1... fireball player
+        private float lastfireballtime = 0;
+
+
+
         // player speed
         private float playerspeed = 75;
         // implementing the overrde Tick function from the GameObject class
@@ -69,15 +80,54 @@ namespace CollisionGame
             {
                 y += dt * playerspeed;
             }
+
+
+           
+            // tasl 1)
+            if (this.space)
+            {
+                fnAddNew(new Fireball(this.x, this.y));
+                
+            }
+
+
+
+
         }
         public override SpriteToDraw GetSprite()
         {
+
+            if(left)
+            {
+                return SpriteToDraw.PlayerLeft;
+            }
+            if(right)
+            {
+                return SpriteToDraw.PlayerRight;
+            }
+            if(up)
+            {
+                return SpriteToDraw.PlayerUp;
+
+            }
+            if(down)
+            {
+                return SpriteToDraw.PlayerDown;
+            }
             return SpriteToDraw.Player;
         }
         public bool left { get; set; }
         public bool right { get; set; }
         public bool up { get; set; }
         public bool down { get; set; }
+
+
+
+        // task 1... adding property for the space
+        public bool space { get; set; }
+
+
+
     }
     class Enemy : ObstacleObject
     {
@@ -123,6 +173,9 @@ namespace CollisionGame
     }
     class Fireball: GameObject
     {
+
+        
+        
         public Fireball(float x, float y)
         {
             this.x = x;

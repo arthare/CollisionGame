@@ -4,8 +4,12 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/ErikaB/source/repos/CollisionGame/CollisionGame/Content/crapface.png</File>
-    <File>C:/Users/ErikaB/source/repos/CollisionGame/CollisionGame/Content/playerface.png</File>
-    <File>C:/Users/ErikaB/source/repos/CollisionGame/CollisionGame/Content/fireball.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/crapface.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/playerface.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/fireball.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/down.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/left.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/right.png</File>
+    <File>C:/Users/artamd/Downloads/CollisionGame-master/CollisionGame/Content/up.png</File>
   </SourceFiles>
 </SourceFileCollection>
