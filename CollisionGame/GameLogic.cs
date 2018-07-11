@@ -23,8 +23,15 @@ namespace CollisionGame
     
     abstract class GameObject
     {
+        public GameObject(GameObject Source)
+        {
+            this.Source = Source;
+        }
+        public abstract bool CanCollide(GameObject other);
+        
         // properties of the gameobject
         public float x { get; set; }
+        public GameObject Source { get; private set; }
         public float y { get; set; }
         public abstract void Tick(float currentTime, float dt, GameLogic.AddNewObjectDelegate fnAddNew);
         public abstract SpriteToDraw GetSprite();
@@ -32,8 +39,13 @@ namespace CollisionGame
     }
     class ObstacleObject : GameObject
     {
+
+        public override bool CanCollide(GameObject other)
+        {
+            return true;
+        }
         static Random r = new Random();
-        public ObstacleObject()
+        public ObstacleObject(GameObject source) : base(source)
         {
             // Starting position on the x axiss
             x = (float)(r.NextDouble() * 500);
@@ -52,10 +64,23 @@ namespace CollisionGame
     // playerobject class inherited from gameobject
     class PlayerObject : GameObject
     {
+        public PlayerObject():base(null)
+        {
 
+        }
+        public override bool CanCollide(GameObject other)
+        {
+            if(this == other.Source)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         // task 1... fireball player
-        private float lastfireballtime = 0;
+        
+        
 
 
 
@@ -86,7 +111,9 @@ namespace CollisionGame
             // tasl 1)
             if (this.space)
             {
-                fnAddNew(new Fireball(this.x, this.y));
+                Fireball newfireball = new Fireball(this.x, this.y, this);
+                
+                fnAddNew(newfireball);
                 
             }
 
@@ -135,9 +162,9 @@ namespace CollisionGame
 
         private int enamyspeed = 50;
         private GameObject target;
-        public Enemy(GameObject p)
+        public Enemy(GameObject target, GameObject source):base(source)
         {
-            this.target = p;
+            this.target = target;
         }
         // overriding Tick to change the implementation from the inhireted from GameObject Class
         public override void Tick(float currentTime, float dt, GameLogic.AddNewObjectDelegate fnAddNew)
@@ -164,19 +191,27 @@ namespace CollisionGame
             lasttime = currentTime - lastfireballtime;
             if (lasttime>1)
             {
-                fnAddNew(new Fireball(this.x, this.y));
+                fnAddNew(new Fireball(this.x, this.y, this));
                 lastfireballtime = currentTime;
             }
             
         }
 
     }
+    
+    //class Fireball_player: GameObject
+    //{
+
+    //}
     class Fireball: GameObject
     {
 
+        public override bool CanCollide(GameObject other)
+        {
+            return true;
+        }
         
-        
-        public Fireball(float x, float y)
+        public Fireball(float x, float y, GameObject source):base(source)
         {
             this.x = x;
             this.y = y;
@@ -193,37 +228,96 @@ namespace CollisionGame
             return SpriteToDraw.Fireball;
         }
     }
+    abstract class LevelOfGame
+    {
+        private float whenDidIStart;
+        public LevelOfGame(float timeOfStart)
+        {
+            whenDidIStart = timeOfStart;
+        }
+        public abstract bool isLevelDone(float CurrentTime, int enemiesCount);
+        public abstract PlayerObject setupLevel(GameLogic.AddNewObjectDelegate addNew);
+       
+
+        // helper functions for peeps that inherit from us:
+        protected float GetTimeInLevel(float currentTime)
+        {
+            return currentTime - whenDidIStart;
+        }
+    }
+
+    class Level1 : LevelOfGame
+    {
+        public Level1(float timeOfStart) : base(timeOfStart) { }
+
+        public override bool isLevelDone(float CurrentTime, int enemiesCount)
+        {
+            if(GetTimeInLevel(CurrentTime)>10)
+            {
+                return true;
+            }
+            return false;
+        }
+        public override PlayerObject setupLevel(GameLogic.AddNewObjectDelegate addNew)
+        {
+            PlayerObject player = new PlayerObject();
+
+            addNew(new Enemy(player, null));
+
+            return player;
+        }
+
+    }
+
+    class Level2 : LevelOfGame
+    {
+        public Level2(float timeOfStart) : base(timeOfStart) { }
+
+        public override bool isLevelDone(float CurrentTime, int enemiesCount)
+        {
+            if(GetTimeInLevel(CurrentTime) >10)
+            {
+                return true;
+            }
+            return false;
+        }
+        public override PlayerObject setupLevel(GameLogic.AddNewObjectDelegate addNew)
+        {
+            PlayerObject player = new PlayerObject();
+
+            addNew(new Enemy(player, null));
+            addNew(new Enemy(player, null));
+
+            return player;
+        }
+
+    }
     class GameLogic
     {
         public delegate void AddNewObjectDelegate(GameObject o);
 
 
-        public List<GameObject> all { get; }
-        public PlayerObject player { get; }
-        public bool isDead { get; set; }
+        public List<GameObject> all { get; private set; }
+        public PlayerObject player { get; private set; }
+        public bool isDead { get; private set; }
+        public float playerScore { get; private set; }
+        private LevelOfGame currentlevel; 
         // constructor
         public GameLogic()
         {
+            // score starts at zero
+            playerScore = 0;
             // initilizing isDead to false at the start of the Game
             isDead = false;
             // creating all to a list for the enemy
             // intilizied to empty list and not null object
             all = new List<GameObject>();
-            // Creating a Player object
-            player = new PlayerObject();
-            // Adding a player
-            all.Add(player);
-            // Not Sure about this loop!!!
-            for (int x = 0; x < 10; x++)
-            {
-                all.Add(new ObstacleObject());
-            }
-            // Creating Multiple enemy.. in this case 10
-            for (int x = 0; x < 10; x++)
-            {
-                all.Add(new Enemy(player));
-            }
 
+            currentlevel = new Level1(0);
+
+            player = currentlevel.setupLevel(this.AddNewObject);
+            all.Remove(player);
+            all.Add(player);
 
 
         }
@@ -237,8 +331,23 @@ namespace CollisionGame
 
         public void tick(float t, float dt)
         {
+            playerScore = (float)Math.Pow(t, 2);
             // check for collisions between all our objects and the player
             collide();
+
+            if(this.currentlevel.isLevelDone(t, 0))
+            {
+
+                all = new List<GameObject>();
+
+                currentlevel = new Level2(t);
+
+                player = currentlevel.setupLevel(this.AddNewObject);
+                all.Remove(player);
+                all.Add(player);
+
+                return;
+            }
 
             // go through every single game object and get them to update their position/logic/etc
             for (int x = 0; x < all.Count; x++)
@@ -253,6 +362,11 @@ namespace CollisionGame
             for (int i = 0; i < all.Count; i++)
             {
                 GameObject go = all[i];
+
+                if(!player.CanCollide(go))
+                {
+                    continue;
+                }
                 if (go == player)
                 {
                     continue;
